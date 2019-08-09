@@ -79,6 +79,35 @@ describe('webContents module', () => {
     })
   })
 
+  describe('window.print()', () => {
+    it('does not crash', async () => {
+      const w = new BrowserWindow({ show: false })
+      await w.loadFile(path.join(fixturesPath, 'pages', 'window-print.html'))
+    })
+  })
+
+  describe('webContents.print()', () => {
+    it('throws when invalid settings are passed', () => {
+      const w = new BrowserWindow({ show: false })
+      expect(() => {
+        // @ts-ignore this line is intentionally incorrect
+        w.webContents.print(true)
+      }).to.throw('webContents.print(): Invalid print settings specified.')
+
+      expect(() => {
+        // @ts-ignore this line is intentionally incorrect
+        w.webContents.print({}, true)
+      }).to.throw('webContents.print(): Invalid optional callback provided.')
+    })
+
+    it('does not crash', () => {
+      const w = new BrowserWindow({ show: false })
+      expect(() => {
+        w.webContents.print({ silent: true })
+      }).to.not.throw()
+    })
+  })
+
   describe('webContents.executeJavaScript', () => {
     describe('in about:blank', () => {
       const expected = 'hello, world!'
